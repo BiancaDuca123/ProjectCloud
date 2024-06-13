@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+//import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
@@ -30,7 +32,7 @@ public class ReviewService {
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public void addComment(Integer userId, ReviewDTO commentDTO) throws IOException {
+    public void addReview(Integer userId, ReviewDTO commentDTO) throws IOException {
         String commentImgKey = "review-img-" + UUID.randomUUID() + ".bytes";
         BlobClient blobClient = bookBlobContainerClient.getBlobClient(commentImgKey);
         blobClient.upload(BinaryData.fromBytes(commentDTO.getFile().getBytes()), true);
