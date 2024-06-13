@@ -2,13 +2,14 @@ package com.example.cloudproject.entity.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
-public class ReviewDTO {
+@Builder
+public class MenuReviewDTO {
     private String reviewId;
     private String text;
     private Integer bookId;
     private Integer rating;
-    MultipartFile file;
+    private String thumbnailImageLink;
+    private String originalImageLink;
 }
