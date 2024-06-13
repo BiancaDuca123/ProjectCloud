@@ -12,7 +12,7 @@ import java.util.List;
 public class BookService {
     private final BookRepository repository;
 
-    public List<Book> getRecipes() {
+    public List<Book> getAllBooks() {
         return repository.findAll();
     }
 }
