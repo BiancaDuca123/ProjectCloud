@@ -5,6 +5,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.queue.QueueClient;
 import com.example.cloudproject.entity.Review;
+import com.example.cloudproject.entity.dto.*;
 import com.example.cloudproject.entity.dto.ReviewDTO;
 import com.example.cloudproject.repository.ReviewRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -26,19 +28,19 @@ public class ReviewService {
 
     private static final String BLOB_BASE_URL = "";
 
-    private final ReviewRepository commentRepository;
+    private final ReviewRepository reviewRepository;
     private final BlobContainerClient bookBlobContainerClient;
     private final QueueClient queueClient;
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public void addReview(Integer userId, ReviewDTO commentDTO) throws IOException {
+    public void addReview(ReviewDTO commentDTO) throws IOException {
         String commentImgKey = "review-img-" + UUID.randomUUID() + ".bytes";
         BlobClient blobClient = bookBlobContainerClient.getBlobClient(commentImgKey);
         blobClient.upload(BinaryData.fromBytes(commentDTO.getFile().getBytes()), true);
 
         String imageLinkOriginal = BLOB_BASE_URL + commentImgKey;
-        Review comment = commentRepository.save(Review.builder()
+        Review comment = reviewRepository.save(Review.builder()
                 .text(commentDTO.getText())
                 .imageLinkOriginal(imageLinkOriginal)
                 .bookId(commentDTO.getBookId())
@@ -50,5 +52,17 @@ public class ReviewService {
                 "commentId", comment.getReviewId(),
                 "commentImgKey", commentImgKey
         )));
+    }
+
+    public List<MenuReviewDTO> getAllReviews(){
+        return reviewRepository.findAllReviews().stream()
+                .map(review -> MenuReviewDTO.builder()
+                        .text(review.getText())
+                        .bookId(review.getBookId())
+                        .thumbnailImageLink(review.getImageLinkThumbnail())
+                        .rating(review.getRating())
+                        .build()
+                )
+                .toList();
     }
 }
